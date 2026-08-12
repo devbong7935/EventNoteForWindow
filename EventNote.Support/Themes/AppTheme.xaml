@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        앱에서 병합할 진입점.
+        App.cs 의 LoadResources 에서 아래 한 줄만 병합하면 색과 기본 컨트롤 외형이 모두 적용된다.
+        pack://application:,,,/EventNote.Support;component/Themes/AppTheme.xaml
+    -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Colors.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/BaseStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

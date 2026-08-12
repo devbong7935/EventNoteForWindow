@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    예시 데이터(JSON)를 앱이 읽는 .enote 파일로 굽는 도구.
+    EventNote.sln 에는 일부러 넣지 않았다. 앱 빌드와 무관하게 필요할 때만 돌린다.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>EventNote.Tools.SampleDataBuilder</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EventNote.Core\EventNote.Core.csproj" />
+  </ItemGroup>
+
+</Project>

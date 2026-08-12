@@ -1,0 +1,249 @@
+[
+  {
+    "Title": "이몽룡 ♥ 성춘향 결혼식",
+    "Category": "Wedding",
+    "HostName": "이한림 · 월매",
+    "EventDate": "2026-05-16T11:00:00",
+    "Venue": "남원 광한루원 예식장",
+    "MealPrice": 42000,
+    "Memo": "광한루에서 그네 뛰다 만난 두 사람. 오작교 건너 신부 입장.",
+    "Guests": [
+      {
+        "Name": "이한림",
+        "Amount": 500000,
+        "Relation": "가족",
+        "Affiliation": "신랑 부친 · 전 남원부사",
+        "MealTickets": 4,
+        "Note": "혼주"
+      },
+      {
+        "Name": "월매",
+        "Amount": 300000,
+        "Relation": "가족",
+        "Affiliation": "신부 모친",
+        "MealTickets": 4,
+        "Note": "혼주"
+      },
+      {
+        "Name": "이한주",
+        "Amount": 200000,
+        "Relation": "친척",
+        "Affiliation": "신랑 작은아버지",
+        "MealTickets": 3,
+        "Note": ""
+      },
+      {
+        "Name": "성참봉",
+        "Amount": 150000,
+        "Relation": "친척",
+        "Affiliation": "신부 당숙",
+        "MealTickets": 2,
+        "Note": ""
+      },
+      {
+        "Name": "방자",
+        "Amount": 30000,
+        "Relation": "신랑측",
+        "Affiliation": "남원 관아 통인",
+        "MealTickets": 1,
+        "Note": "중신 노릇 했다고 우김"
+      },
+      {
+        "Name": "향단",
+        "Amount": 30000,
+        "Relation": "신부측",
+        "Affiliation": "신부 몸종",
+        "MealTickets": 1,
+        "Note": ""
+      },
+      {
+        "Name": "운봉 영장",
+        "Amount": 100000,
+        "Relation": "직장",
+        "Affiliation": "운봉현 관아",
+        "MealTickets": 2,
+        "Note": ""
+      },
+      {
+        "Name": "김낭청",
+        "Amount": 100000,
+        "Relation": "직장",
+        "Affiliation": "남원 관아",
+        "MealTickets": 2,
+        "Note": ""
+      },
+      {
+        "Name": "이졸 박수동",
+        "Amount": 50000,
+        "Relation": "직장",
+        "Affiliation": "암행어사 수행",
+        "MealTickets": 2,
+        "Note": ""
+      },
+      {
+        "Name": "박한량",
+        "Amount": 50000,
+        "Relation": "친구",
+        "Affiliation": "남원 한량계",
+        "MealTickets": 1,
+        "Note": ""
+      },
+      {
+        "Name": "최서방",
+        "Amount": 50000,
+        "Relation": "친구",
+        "Affiliation": "저잣거리 지물포",
+        "MealTickets": 1,
+        "Note": ""
+      },
+      {
+        "Name": "훈장 정약헌",
+        "Amount": 100000,
+        "Relation": "학교",
+        "Affiliation": "남원 향교",
+        "MealTickets": 2,
+        "Note": "신랑 글 스승"
+      },
+      {
+        "Name": "광한루 시회",
+        "Amount": 200000,
+        "Relation": "단체",
+        "Affiliation": "광한루 시회 계원 일동",
+        "MealTickets": 3,
+        "Note": "계에서 갹출"
+      },
+      {
+        "Name": "봉산댁",
+        "Amount": 30000,
+        "Relation": "이웃",
+        "Affiliation": "춘향집 옆집",
+        "MealTickets": 1,
+        "Note": ""
+      },
+      {
+        "Name": "김번수",
+        "Amount": 30000,
+        "Relation": "이웃",
+        "Affiliation": "남원 옥사",
+        "MealTickets": 1,
+        "Note": ""
+      },
+      {
+        "Name": "변학도",
+        "Amount": 100000,
+        "Relation": "기타",
+        "Affiliation": "전 남원부사",
+        "MealTickets": 0,
+        "Note": "봉투만 보내고 식사는 안 함"
+      }
+    ]
+  },
+  {
+    "Title": "故 곽씨 부인 상",
+    "Category": "Funeral",
+    "HostName": "심학규",
+    "EventDate": "2026-03-04T09:00:00",
+    "Venue": "황주 도화동 자택",
+    "UsesMealTickets": false,
+    "MealPrice": 0,
+    "Memo": "삼일장. 동네 분들이 상여와 밤샘을 함께 맡아 주심.",
+    "Guests": [
+      {
+        "Name": "장승상댁 부인",
+        "Amount": 300000,
+        "Relation": "기타",
+        "Affiliation": "무릉촌 장승상댁",
+        "MealTickets": 0,
+        "Note": "쌀 두 섬 따로 보내옴"
+      },
+      {
+        "Name": "곽생원",
+        "Amount": 200000,
+        "Relation": "친척",
+        "Affiliation": "고인 친정 오라버니",
+        "MealTickets": 0,
+        "Note": ""
+      },
+      {
+        "Name": "심봉수",
+        "Amount": 150000,
+        "Relation": "친척",
+        "Affiliation": "상주 사촌",
+        "MealTickets": 0,
+        "Note": "밤샘"
+      },
+      {
+        "Name": "도화동 동계",
+        "Amount": 200000,
+        "Relation": "단체",
+        "Affiliation": "도화동 동계 일동",
+        "MealTickets": 0,
+        "Note": "마을에서 갹출 · 상여 메어 줌"
+      },
+      {
+        "Name": "몽운사 화주승",
+        "Amount": 100000,
+        "Relation": "기타",
+        "Affiliation": "몽운사",
+        "MealTickets": 0,
+        "Note": "공양미 이야기는 사양함"
+      },
+      {
+        "Name": "안맹인계",
+        "Amount": 100000,
+        "Relation": "단체",
+        "Affiliation": "황주 맹인계",
+        "MealTickets": 0,
+        "Note": ""
+      },
+      {
+        "Name": "귀덕어멈",
+        "Amount": 50000,
+        "Relation": "이웃",
+        "Affiliation": "도화동",
+        "MealTickets": 0,
+        "Note": "젖동냥 거들어 준 이"
+      },
+      {
+        "Name": "뺑덕어멈",
+        "Amount": 30000,
+        "Relation": "이웃",
+        "Affiliation": "도화동",
+        "MealTickets": 0,
+        "Note": ""
+      },
+      {
+        "Name": "무릉촌 이생원",
+        "Amount": 50000,
+        "Relation": "이웃",
+        "Affiliation": "무릉촌",
+        "MealTickets": 0,
+        "Note": ""
+      },
+      {
+        "Name": "앞집 최서방",
+        "Amount": 30000,
+        "Relation": "이웃",
+        "Affiliation": "도화동",
+        "MealTickets": 0,
+        "Note": ""
+      },
+      {
+        "Name": "황주 감영 서리",
+        "Amount": 50000,
+        "Relation": "기타",
+        "Affiliation": "황주 감영",
+        "MealTickets": 0,
+        "Note": ""
+      },
+      {
+        "Name": "개똥이네",
+        "Amount": 30000,
+        "Relation": "이웃",
+        "Affiliation": "도화동",
+        "MealTickets": 0,
+        "Note": ""
+      }
+    ]
+  }
+]

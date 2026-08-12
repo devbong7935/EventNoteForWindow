@@ -1,0 +1,15 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 공용 유닛(UI/Units)의 기본 스타일 모음. WPF 가 자동으로 찾아 읽는다. -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Colors.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/AccentButton.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/CardPanel.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/StatTile.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/SearchBar.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/MoneyTextBox.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/FormField.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

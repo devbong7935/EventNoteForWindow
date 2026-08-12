@@ -1,0 +1,10 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 화면(UI/Views)의 기본 스타일 모음. WPF 가 자동으로 찾아 읽는다. -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/EventNote.Main;component/Themes/Views/MainContent.xaml" />
+        <ResourceDictionary Source="/EventNote.Main;component/Themes/Views/EventEditorWindow.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

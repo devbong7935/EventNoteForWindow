@@ -1,0 +1,51 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- 앱 전체에서 쓰는 색과 치수. 색을 바꾸려면 이 파일만 고치면 된다. -->
+
+    <FontFamily x:Key="Font.Default">맑은 고딕, Malgun Gothic, Segoe UI</FontFamily>
+    <sys:Double x:Key="Font.Size.Normal">13</sys:Double>
+    <sys:Double x:Key="Font.Size.Small">12</sys:Double>
+    <sys:Double x:Key="Font.Size.Title">15</sys:Double>
+
+    <CornerRadius x:Key="Radius.Small">4</CornerRadius>
+    <CornerRadius x:Key="Radius.Medium">6</CornerRadius>
+
+    <SolidColorBrush x:Key="Brush.Window" Color="#F1F3F5" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Surface.Muted" Color="#F7F9FB" />
+    <SolidColorBrush x:Key="Brush.Border" Color="#D7DCE2" />
+    <SolidColorBrush x:Key="Brush.Border.Strong" Color="#B6BEC7" />
+
+    <SolidColorBrush x:Key="Brush.Text" Color="#26303B" />
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="#6B7784" />
+    <SolidColorBrush x:Key="Brush.Text.Disabled" Color="#A6B0BA" />
+
+    <SolidColorBrush x:Key="Brush.Header" Color="#5A6472" />
+    <SolidColorBrush x:Key="Brush.Header.Foreground" Color="#FFFFFF" />
+
+    <SolidColorBrush x:Key="Brush.Accent" Color="#3E77B5" />
+    <SolidColorBrush x:Key="Brush.Accent.Light" Color="#DCE9F7" />
+
+    <SolidColorBrush x:Key="Brush.Row.Alt" Color="#F8FAFC" />
+    <SolidColorBrush x:Key="Brush.Row.Hover" Color="#EDF3FA" />
+    <SolidColorBrush x:Key="Brush.Row.Selected" Color="#D9E7F6" />
+
+    <!-- 버튼 종류별 색 -->
+    <SolidColorBrush x:Key="Brush.Button.Primary" Color="#3E77B5" />
+    <SolidColorBrush x:Key="Brush.Button.Primary.Foreground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Button.Success" Color="#A8E6CF" />
+    <SolidColorBrush x:Key="Brush.Button.Success.Foreground" Color="#136A4E" />
+    <SolidColorBrush x:Key="Brush.Button.Danger" Color="#F3A9A9" />
+    <SolidColorBrush x:Key="Brush.Button.Danger.Foreground" Color="#7E1F1F" />
+    <SolidColorBrush x:Key="Brush.Button.Neutral" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Button.Neutral.Foreground" Color="#38424E" />
+
+    <!-- 집계 타일 색 -->
+    <SolidColorBrush x:Key="Brush.Tile.Pink" Color="#FADBD8" />
+    <SolidColorBrush x:Key="Brush.Tile.Blue" Color="#D6EAF8" />
+    <SolidColorBrush x:Key="Brush.Tile.Green" Color="#D5F5E3" />
+    <SolidColorBrush x:Key="Brush.Tile.Orange" Color="#FDEBD0" />
+
+</ResourceDictionary>

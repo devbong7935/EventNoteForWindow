@@ -1,0 +1,73 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:vm="clr-namespace:EventNote.Main.Local.ViewModels;assembly=EventNote.Main"
+                    xmlns:views="clr-namespace:EventNote.Forms.UI.Views"
+                    mc:Ignorable="d">
+
+    <Style TargetType="{x:Type views:MainWindow}">
+        <!--
+            BaseStyles.xaml 의 <Style TargetType="Window"> 는 암시적 스타일이라
+            정확히 Window 타입에만 붙고 파생 클래스인 이 창에는 안 붙는다.
+            그래서 창 공통 외형을 여기서 다시 지정한다.
+        -->
+        <Setter Property="Background" Value="{DynamicResource Brush.Window}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Default}" />
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+
+        <Setter Property="Title" Value="경조사 명부" />
+        <Setter Property="Height" Value="820" />
+        <Setter Property="Width" Value="1280" />
+        <Setter Property="MinHeight" Value="640" />
+        <Setter Property="MinWidth" Value="1024" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type views:MainWindow}">
+                    <!--
+                        Window 기본 템플릿에는 Background 를 칠하는 Border 가 들어 있다.
+                        Template 을 갈아끼우면 그게 사라져 창 바탕이 안 칠해지므로 여기서 다시 그린다.
+                    -->
+                    <Border Background="{TemplateBinding Background}">
+                        <AdornerDecorator>
+                            <DockPanel d:DataContext="{d:DesignInstance Type=vm:MainViewModel}">
+
+                            <!-- 메뉴 -->
+                            <Menu DockPanel.Dock="Top">
+                                <MenuItem Header="파일(_F)">
+                                    <MenuItem Header="새 행사(_N)" InputGestureText="Ctrl+N" Command="{Binding AddEventCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="데이터 내보내기(_O)... (.enote)" Command="{Binding ExportArchiveCommand}"
+                                              ToolTip="행사 정보와 하객 명부 전체를 암호화된 파일 하나로 저장합니다. 다른 컴퓨터로 옮길 때 씁니다." />
+                                    <MenuItem Header="데이터 가져오기(_I)... (.enote)" Command="{Binding ImportArchiveCommand}"
+                                              ToolTip="다른 컴퓨터에서 내보낸 .enote 파일을 읽어 들입니다." />
+                                    <Separator />
+                                    <MenuItem Header="현재 행사 엑셀로 내보내기(_E)" InputGestureText="Ctrl+E"
+                                              Command="{Binding ExportCurrentCommand}" />
+                                    <MenuItem Header="전체 행사 엑셀로 내보내기(_A)" Command="{Binding ExportAllCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="저장(_S)" InputGestureText="Ctrl+S" Command="{Binding SaveNowCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="끝내기(_X)" Command="ApplicationCommands.Close" />
+                                </MenuItem>
+                                <MenuItem Header="설정(_T)">
+                                    <MenuItem Header="데이터 폴더 열기(_D)" Command="{Binding OpenDataFolderCommand}" />
+                                </MenuItem>
+                                <MenuItem Header="도움말(_H)">
+                                    <MenuItem Header="프로그램 정보(_A)" Command="{Binding ShowAboutCommand}" />
+                                </MenuItem>
+                            </Menu>
+
+                                <!-- 본문. App 이 EventNote.Main 의 MainContent 를 끼워 넣는다. -->
+                                <ContentPresenter />
+                            </DockPanel>
+                        </AdornerDecorator>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
