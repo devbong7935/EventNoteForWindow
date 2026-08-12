@@ -50,6 +50,9 @@ public class CeremonyEvent
         ? EventDate.ToString("yyyy-MM-dd (ddd)")
         : EventDate.ToString("yyyy-MM-dd (ddd) HH:mm");
 
+    /// <summary>이 행사에서 온 사람을 부르는 말. 결혼식이면 "하객", 장례식이면 "조문객".</summary>
+    public string GuestTerm => Category.ToGuestTerm();
+
     /// <summary>제목이 비어 있으면 주최자/종류로 대체 표기.</summary>
     public string DisplayTitle =>
         !string.IsNullOrWhiteSpace(Title) ? Title

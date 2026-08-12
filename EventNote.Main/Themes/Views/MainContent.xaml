@@ -52,7 +52,7 @@
 
                                 <TextBlock DockPanel.Dock="Bottom" Margin="2,8,2,0" TextWrapping="Wrap"
                                            FontSize="12" Foreground="{DynamicResource Brush.Text.Disabled}"
-                                           Text="행사를 클릭하면 그 행사의 하객 명부가 오른쪽에 표시됩니다." />
+                                           Text="행사를 클릭하면 그 행사의 명부가 오른쪽에 표시됩니다." />
 
                                 <ListBox ItemsSource="{Binding Events}"
                                          SelectedItem="{Binding SelectedEvent, Mode=TwoWay}"
@@ -65,8 +65,27 @@
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
+                                                <!--
+                                                    행사 종류 기호. 컬러 이모지가 아니라 단색 글리프로 그려지므로
+                                                    Foreground 를 따른다. 고른 행사는 왼쪽 막대와 같은 액센트로 맞춘다.
+                                                -->
                                                 <TextBlock Grid.Column="0" Text="{Binding Glyph}" FontSize="18"
-                                                           VerticalAlignment="Top" Margin="0,1,8,0" />
+                                                           VerticalAlignment="Top" Margin="0,1,10,0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground"
+                                                                    Value="{DynamicResource Brush.Text.Secondary}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Value="True"
+                                                                             Binding="{Binding IsSelected,
+                                                                                       RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
+                                                                    <Setter Property="Foreground"
+                                                                            Value="{DynamicResource Brush.Accent}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
                                                 <StackPanel Grid.Column="1">
                                                     <TextBlock Text="{Binding Title}" FontWeight="Bold"
                                                                TextTrimming="CharacterEllipsis"
@@ -107,12 +126,19 @@
                             <!-- 검색 + 하객 조작 -->
                             <Grid Grid.Row="1" Margin="0,0,0,12">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" MaxWidth="480" />
+                                    <!--
+                                        왼쪽이 남는 자리를 다 먹어 버튼들을 오른쪽 끝에 붙여 준다.
+                                        여기에 MaxWidth 를 걸면 안 된다. star 열이 잘리면 그만큼을
+                                        WPF 가 다른 열로 넘겨주지 않아, 그 자리가 통째로 비면서
+                                        버튼들이 오른쪽 끝에서 떨어져 나온다.
+                                    -->
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
+                                <!-- 오른쪽 여백이 버튼과의 간격이 된다. -->
                                 <units:SearchBar Grid.Column="0"
+                                                 Margin="0,0,20,0"
                                                  IsEnabled="{Binding HasSelectedEvent}"
                                                  FieldItemsSource="{Binding SearchFields}"
                                                  FieldDisplayMemberPath="Name"
@@ -121,19 +147,22 @@
                                                  Placeholder="검색어 입력 후 Enter"
                                                  SearchCommand="{Binding SearchCommand}" />
 
-                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
                                     <units:AccentButton Content="엑셀 내보내기" Glyph="⤓" Kind="Primary" Margin="0,0,8,0"
                                                         Command="{Binding ExportCurrentCommand}" />
-                                    <units:AccentButton Content="하객 추가" Glyph="＋" Kind="Success" Margin="0,0,8,0"
+                                    <!-- 문구는 고른 행사를 따라간다. 장례식이면 '조문객 추가' 가 된다. -->
+                                    <units:AccentButton Content="{Binding AddGuestText}"
+                                                        Glyph="＋" Kind="Success" Margin="0,0,8,0"
                                                         Command="{Binding AddGuestCommand}" />
-                                    <units:AccentButton Content="하객 삭제" Glyph="－" Kind="Danger"
+                                    <units:AccentButton Content="{Binding DeleteGuestText}"
+                                                        Glyph="－" Kind="Danger"
                                                         Command="{Binding DeleteGuestsCommand}"
                                                         CommandParameter="{Binding SelectedItems, ElementName=GuestGrid}" />
                                 </StackPanel>
                             </Grid>
 
-                            <!-- 하객 리스트 -->
-                            <units:CardPanel Grid.Row="2" Header="하객 리스트">
+                            <!-- 명부 -->
+                            <units:CardPanel Grid.Row="2" Header="{Binding GuestListHeader}">
                                 <Grid>
                                     <!-- 카드가 이미 테두리를 그린다. 표까지 테두리를 두르면 상자 속 상자가 된다. -->
                                     <DataGrid x:Name="GuestGrid"

@@ -27,7 +27,13 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="8"
                                 SnapsToDevicePixels="True">
-                            <Grid Margin="{TemplateBinding Padding}">
+                            <!--
+                                Grid 에 Margin="{TemplateBinding Padding}" 을 주면 안 된다.
+                                TextBox 가 글자를 그릴 때 Padding 을 스스로 한 번 적용하므로
+                                숫자만 여백을 두 배로 먹어 단위 글자와 사이가 벌어진다.
+                                여백이 필요한 힌트·단위에만 따로 준다.
+                            -->
+                            <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -43,6 +49,7 @@
                                 <TextBlock x:Name="PlaceholderText"
                                            Grid.Column="0"
                                            Text="{TemplateBinding Placeholder}"
+                                           Margin="{TemplateBinding Padding}"
                                            IsHitTestVisible="False"
                                            TextAlignment="{TemplateBinding TextAlignment}"
                                            VerticalAlignment="Center"
@@ -53,7 +60,7 @@
                                 <TextBlock x:Name="SuffixText"
                                            Grid.Column="1"
                                            Text="{TemplateBinding Suffix}"
-                                           Margin="6,0,0,0"
+                                           Margin="0,0,10,0"
                                            VerticalAlignment="Center"
                                            FontWeight="Normal"
                                            Foreground="{DynamicResource Brush.Text.Secondary}" />

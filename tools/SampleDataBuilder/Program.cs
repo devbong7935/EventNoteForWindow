@@ -70,7 +70,7 @@ internal static class Program
         {
             Console.WriteLine($"  {e.Category.ToGlyph()} {e.DisplayTitle}  ({e.DateDisplay})");
             Console.WriteLine(
-                $"     하객 {e.Guests.Count}명 · 금액 {e.TotalAmount:N0}원 · 식권 {e.TotalTickets}장 · 식대 차감 후 {e.NetAmount:N0}원");
+                $"     {e.GuestTerm} {e.Guests.Count}명 · 금액 {e.TotalAmount:N0}원 · 식권 {e.TotalTickets}장 · 식대 차감 후 {e.NetAmount:N0}원");
         }
 
         var ok = reloaded.Events.Count == events.Count
@@ -79,7 +79,7 @@ internal static class Program
 
         Console.WriteLine();
         Console.WriteLine(ok
-            ? $"검증 통과 — 행사 {reloaded.Manifest.EventCount}건 / 하객 {reloaded.Manifest.GuestCount}명 그대로 복원됨"
+            ? $"검증 통과 — 행사 {reloaded.Manifest.EventCount}건 / 인원 {reloaded.Manifest.GuestCount}명 그대로 복원됨"
             : "검증 실패 — 다시 읽은 내용이 입력과 다릅니다");
 
         return ok ? 0 : 1;

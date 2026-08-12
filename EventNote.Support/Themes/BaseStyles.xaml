@@ -51,8 +51,13 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="8"
                                 SnapsToDevicePixels="True">
+                            <!--
+                                여기에 Margin="{TemplateBinding Padding}" 을 주면 안 된다.
+                                TextBox 가 글자를 그릴 때 Padding 을 스스로 한 번 적용하므로
+                                여백이 두 배로 먹는다. Padding 이 클수록 티가 나서, 검색창처럼
+                                32 를 주면 글자가 64px 안쪽에서 시작해 돋보기와 한참 떨어져 보인다.
+                            -->
                             <ScrollViewer x:Name="PART_ContentHost"
-                                          Margin="{TemplateBinding Padding}"
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                           Focusable="False"
                                           HorizontalScrollBarVisibility="Hidden"
@@ -942,6 +947,12 @@
 
     <!-- 왼쪽 행사 목록처럼 카드 형태로 보여줄 때 쓰는 항목 스타일 -->
     <Style x:Key="Style.ListBoxItem.Card" TargetType="{x:Type ListBoxItem}">
+        <!--
+            ListBoxItem 기본 스타일이 Foreground 를 검정으로 들고 있어서 그대로 두면
+            안쪽에서 색을 지정하지 않은 글자·기호가 다크 테마에서도 검게 나온다.
+            여기서 한 번 덮어 두면 카드 안 전체가 팔레트를 따라간다.
+        -->
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0,0,0,7" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />

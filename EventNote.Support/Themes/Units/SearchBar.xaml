@@ -24,7 +24,11 @@
                                   SelectedItem="{Binding SelectedField, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
 
                         <Grid Grid.Column="1" Margin="8,0,8,0">
-                            <!-- 왼쪽 여백을 비워 둔 입력칸. 그 자리에 돋보기를 얹는다. -->
+                            <!--
+                                왼쪽 여백을 비워 둔 입력칸. 그 자리에 돋보기를 얹는다.
+                                아래 힌트 문구의 Margin 과 이 Padding 의 왼쪽 값이 같아야
+                                입력 전후로 글자가 같은 자리에서 시작한다.
+                            -->
                             <TextBox x:Name="PART_Editor"
                                      Padding="32,6,10,6"
                                      VerticalContentAlignment="Center"
@@ -58,10 +62,12 @@
                                                CommandParameter="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="Text" Value="">
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                        </Trigger>
-                        <Trigger Property="Text" Value="{x:Null}">
+                        <!--
+                            Text 가 비었는지로 판단하지 않는다. 한글을 조합하는 동안에는 화면에 글자가
+                            보여도 Text 는 아직 비어 있어서, 안내 문구가 입력한 글자 위에 겹쳐 남는다.
+                            IsPlaceholderVisible 이 조합 상태까지 함께 본다.
+                        -->
+                        <Trigger Property="IsPlaceholderVisible" Value="True">
                             <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">

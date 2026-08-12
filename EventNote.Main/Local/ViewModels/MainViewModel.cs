@@ -92,6 +92,10 @@ public partial class MainViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(SelectedEventHeader))]
     [NotifyPropertyChangedFor(nameof(SelectedEventSubHeader))]
     [NotifyPropertyChangedFor(nameof(UsesMealTickets))]
+    [NotifyPropertyChangedFor(nameof(GuestTerm))]
+    [NotifyPropertyChangedFor(nameof(GuestListHeader))]
+    [NotifyPropertyChangedFor(nameof(AddGuestText))]
+    [NotifyPropertyChangedFor(nameof(DeleteGuestText))]
     [NotifyCanExecuteChangedFor(nameof(EditEventCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteEventCommand))]
     [NotifyCanExecuteChangedFor(nameof(AddGuestCommand))]
@@ -131,6 +135,25 @@ public partial class MainViewModel : ObservableObject
     private bool _isDarkTheme;
 
     public bool HasSelectedEvent => SelectedEvent is not null;
+
+    /// <summary>
+    /// 온 사람을 부르는 말. 고른 행사의 종류를 따라간다. 결혼식이면 "하객", 장례식이면 "조문객".
+    /// 표 제목과 추가/삭제 버튼 문구가 이 값을 물고 있다.
+    /// </summary>
+    public string GuestTerm => SelectedEvent?.Model.GuestTerm ?? "하객";
+
+    /*
+     * 아래 세 개는 화면에 그대로 나갈 완성된 문구다.
+     * XAML 에서 Binding 의 StringFormat 으로 만들 수도 있을 것 같지만 안 된다.
+     * CardPanel.Header 와 Button.Content 는 object 형이라 WPF 가 StringFormat 을 무시하고
+     * "조문객 리스트" 가 아니라 "조문객" 만 나온다.
+     */
+
+    public string GuestListHeader => $"{GuestTerm} 리스트";
+
+    public string AddGuestText => $"{GuestTerm} 추가";
+
+    public string DeleteGuestText => $"{GuestTerm} 삭제";
 
     /// <summary>
     /// 선택한 행사가 식권을 쓰는지. 식권 열 · 식권합계 열 · 식권 타일 · 식대 차감 타일이 이 값에 따라 나타났다 사라진다.
@@ -219,6 +242,13 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(SelectedEventHeader));
         OnPropertyChanged(nameof(SelectedEventSubHeader));
         OnPropertyChanged(nameof(UsesMealTickets));
+
+        // 종류를 결혼식에서 장례식으로 바꿨다면 부르는 말도 따라 바뀌어야 한다.
+        OnPropertyChanged(nameof(GuestTerm));
+        OnPropertyChanged(nameof(GuestListHeader));
+        OnPropertyChanged(nameof(AddGuestText));
+        OnPropertyChanged(nameof(DeleteGuestText));
+
         RefreshTotals();
         MarkDirty();
         StatusText = "행사 정보를 수정했습니다.";
@@ -230,7 +260,8 @@ public partial class MainViewModel : ObservableObject
         if (SelectedEvent is null) return;
 
         var target = SelectedEvent;
-        var message = $"'{target.Title}' 행사를 삭제할까요?\n하객 {target.Guests.Count}명의 기록도 함께 지워집니다.";
+        var message = $"'{target.Title}' 행사를 삭제할까요?\n" +
+                      $"{target.Model.GuestTerm} {target.Guests.Count}명의 기록도 함께 지워집니다.";
         if (!_dialogs.Confirm(message, "행사 삭제")) return;
 
         var index = Events.IndexOf(target);
@@ -248,9 +279,9 @@ public partial class MainViewModel : ObservableObject
         // 검색 중이면 새로 넣은 빈 행이 걸러져 보이지 않는다. 먼저 필터를 푼다.
         if (!string.IsNullOrWhiteSpace(SearchText)) SearchText = string.Empty;
 
-        // 항상 빈 행으로 추가한다. 직전 하객의 값을 물려받지 않는다.
+        // 항상 빈 행으로 추가한다. 직전 사람의 값을 물려받지 않는다.
         SelectedEvent.Guests.Add(new GuestViewModel());
-        StatusText = "하객을 추가했습니다. 표에서 바로 입력하세요.";
+        StatusText = $"{GuestTerm}을 추가했습니다. 표에서 바로 입력하세요.";
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteGuests))]
@@ -267,10 +298,10 @@ public partial class MainViewModel : ObservableObject
         var label = targets.Count == 1
             ? $"'{Display(targets[0])}' 님을"
             : $"선택한 {targets.Count}명을";
-        if (!_dialogs.Confirm($"{label} 삭제할까요?", "하객 삭제")) return;
+        if (!_dialogs.Confirm($"{label} 삭제할까요?", $"{GuestTerm} 삭제")) return;
 
         foreach (var target in targets) SelectedEvent.Guests.Remove(target);
-        StatusText = $"하객 {targets.Count}명을 삭제했습니다.";
+        StatusText = $"{GuestTerm} {targets.Count}명을 삭제했습니다.";
 
         static string Display(GuestViewModel guest)
             => string.IsNullOrWhiteSpace(guest.Name) ? "(이름 없음)" : guest.Name;
@@ -332,9 +363,10 @@ public partial class MainViewModel : ObservableObject
             IsBusy = false;
             StatusText = $"데이터를 내보냈습니다 · {Path.GetFileName(path)}";
 
+            // 여러 행사를 한꺼번에 다루므로 하객·조문객을 아우르는 말을 쓴다.
             var guestCount = models.Sum(m => m.Guests.Count);
             _dialogs.Info(
-                $"행사 {models.Count}건 · 하객 {guestCount}명을 내보냈습니다.\n\n{path}",
+                $"행사 {models.Count}건 · 인원 {guestCount}명을 내보냈습니다.\n\n{path}",
                 "데이터 내보내기 완료");
         }
         catch (Exception ex)
@@ -437,7 +469,8 @@ public partial class MainViewModel : ObservableObject
     private void ShowAbout()
         => _dialogs.Info(
             "경조사 명부 (EventNote)\n\n" +
-            "행사별로 하객 명부와 경조사금을 정리하고 엑셀로 내보냅니다.\n\n" +
+            "행사별로 명부와 경조사금을 정리하고 엑셀로 내보냅니다.\n" +
+            "결혼식은 하객, 장례식은 조문객으로 행사 종류에 맞춰 표시합니다.\n\n" +
             $"데이터 파일: {_repository.StorePath}\n" +
             "이 파일은 앱 전용 형식으로 암호화되어 있어 메모장·엑셀 등으로는 내용을 볼 수 없습니다.\n\n" +
             "다른 컴퓨터로 옮기려면 [파일 > 데이터 내보내기]로 .enote 파일을 만든 뒤,\n" +
@@ -451,7 +484,7 @@ public partial class MainViewModel : ObservableObject
         var source = string.IsNullOrWhiteSpace(manifest.SourceMachine) ? "알 수 없음" : manifest.SourceMachine;
         // 어느 버튼이 무슨 뜻인지는 버튼 문구가 직접 말한다. 본문에서 다시 설명하지 않는다.
         return _dialogs.AskImportMode(
-            $"불러올 파일에는 행사 {manifest.EventCount}건 · 하객 {manifest.GuestCount}명이 들어 있습니다.\n" +
+            $"불러올 파일에는 행사 {manifest.EventCount}건 · 인원 {manifest.GuestCount}명이 들어 있습니다.\n" +
             $"내보낸 시각: {manifest.ExportedAt:yyyy-MM-dd HH:mm} (컴퓨터: {source})\n\n" +
             $"현재 이 프로그램에는 행사 {Events.Count}건이 있습니다.\n" +
             "합치면 같은 행사는 파일 내용으로 바뀝니다.");

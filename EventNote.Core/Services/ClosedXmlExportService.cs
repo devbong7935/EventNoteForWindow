@@ -43,7 +43,7 @@ public sealed class ClosedXmlExportService : IExcelExportService
 
     public string SuggestFileName(CeremonyEvent ceremonyEvent)
     {
-        var name = $"{ceremonyEvent.EventDate:yyyyMMdd}_{ceremonyEvent.DisplayTitle}_하객명부.xlsx";
+        var name = $"{ceremonyEvent.EventDate:yyyyMMdd}_{ceremonyEvent.DisplayTitle}_{ceremonyEvent.GuestTerm}명부.xlsx";
         return string.Concat(name.Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c));
     }
 
