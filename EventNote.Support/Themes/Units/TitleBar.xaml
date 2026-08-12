@@ -1,0 +1,118 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+                    xmlns:controls="clr-namespace:EventNote.Support.UI.Units">
+
+    <!-- 창 버튼 아이콘. 채우지 않고 선으로만 그린다. -->
+    <Geometry x:Key="Glyph.Minimize">M 0,0 H 11</Geometry>
+    <Geometry x:Key="Glyph.Maximize">M 0.5,0.5 H 10.5 V 10.5 H 0.5 Z</Geometry>
+    <Geometry x:Key="Glyph.Restore">M 2.5,2.5 V 0.5 H 10.5 V 8.5 H 8.5 M 0.5,2.5 H 8.5 V 10.5 H 0.5 Z</Geometry>
+    <Geometry x:Key="Glyph.Close">M 0,0 L 11,11 M 11,0 L 0,11</Geometry>
+
+    <!--
+        앱 마크. 세로형 부조 봉투에 기재 줄 하나.
+        가로형 봉투는 이메일 아이콘으로 읽혀서 exe 아이콘과 같은 이유로 피했다.
+    -->
+    <Geometry x:Key="Glyph.Mark">M 0.5,0.5 H 8.5 V 11.5 H 0.5 Z M 0.5,3.5 H 8.5</Geometry>
+
+    <Style TargetType="{x:Type controls:TitleBar}">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Background" Value="{DynamicResource Brush.TitleBar}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:TitleBar}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="0,0,0,1"
+                            SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border x:Name="Mark" Grid.Column="0"
+                                    Width="24" Height="24" CornerRadius="7"
+                                    Margin="10,0,0,0"
+                                    Background="{DynamicResource Brush.Accent}">
+                                <Path Data="{StaticResource Glyph.Mark}"
+                                      Stroke="{DynamicResource Brush.Button.Primary.Foreground}"
+                                      StrokeThickness="1.2"
+                                      StrokeLineJoin="Round"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{TemplateBinding Title}"
+                                       Margin="10,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       FontSize="{DynamicResource Font.Size.Normal}"
+                                       Foreground="{TemplateBinding Foreground}" />
+
+                            <!--
+                                메뉴가 들어오는 자리. IsHitTestVisibleInChrome 을 켜지 않으면
+                                Windows 가 이 자리를 제목줄로 보고 클릭을 가로챈다.
+                            -->
+                            <ContentPresenter Grid.Column="2"
+                                              Margin="16,0,0,0"
+                                              VerticalAlignment="Center"
+                                              shell:WindowChrome.IsHitTestVisibleInChrome="True" />
+
+                            <StackPanel Grid.Column="4" Orientation="Horizontal"
+                                        VerticalAlignment="Top"
+                                        shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                                <controls:CaptionButton x:Name="MinimizeButton"
+                                                        Glyph="{StaticResource Glyph.Minimize}"
+                                                        ToolTip="최소화"
+                                                        Command="{x:Static SystemCommands.MinimizeWindowCommand}" />
+                                <controls:CaptionButton x:Name="MaximizeButton"
+                                                        Glyph="{StaticResource Glyph.Maximize}"
+                                                        ToolTip="최대화"
+                                                        Command="{x:Static SystemCommands.MaximizeWindowCommand}" />
+                                <controls:CaptionButton x:Name="RestoreButton"
+                                                        Glyph="{StaticResource Glyph.Restore}"
+                                                        ToolTip="이전 크기로"
+                                                        Visibility="Collapsed"
+                                                        Command="{x:Static SystemCommands.RestoreWindowCommand}" />
+                                <controls:CaptionButton x:Name="CloseButton"
+                                                        Glyph="{StaticResource Glyph.Close}"
+                                                        IsClose="True"
+                                                        ToolTip="닫기"
+                                                        Command="{x:Static SystemCommands.CloseWindowCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ShowMark" Value="False">
+                            <Setter TargetName="Mark" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="ShowMinimize" Value="False">
+                            <Setter TargetName="MinimizeButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="ShowMaximize" Value="False">
+                            <Setter TargetName="MaximizeButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <!-- 최대화 상태에서는 '이전 크기로' 로 바꿔 단다. -->
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           Value="Maximized" />
+                                <Condition Binding="{Binding ShowMaximize, RelativeSource={RelativeSource Self}}"
+                                           Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="MaximizeButton" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="RestoreButton" Property="Visibility" Value="Visible" />
+                        </MultiDataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -2,58 +2,60 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:EventNote.Support.UI.Units">
 
+    <!--
+        예전에는 값 영역을 파스텔로 통째로 칠했다. 네 장이 나란히 서면 화면에서 가장 시끄러운
+        덩어리가 돼 정작 숫자가 안 읽혔다. 이제 Accent 는 왼쪽 3px 막대와 숫자 색으로만 쓴다.
+    -->
+
     <Style TargetType="{x:Type controls:StatTile}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Sunken}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
-        <Setter Property="MinHeight" Value="38" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:StatTile}">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4"
-                            SnapsToDevicePixels="True">
+                            CornerRadius="8"
+                            SnapsToDevicePixels="True"
+                            ClipToBounds="True">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="3" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0"
-                                    Background="{DynamicResource Brush.Surface.Muted}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="0,0,1,0"
-                                    CornerRadius="3,0,0,3"
-                                    Width="{TemplateBinding LabelWidth}">
-                                <TextBlock Text="{TemplateBinding Label}"
-                                           FontWeight="Bold"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           TextAlignment="Center"
-                                           TextWrapping="Wrap"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Border>
+                            <Border Grid.Column="0" Background="{TemplateBinding Accent}" />
 
-                            <Border Grid.Column="1"
-                                    Background="{TemplateBinding Accent}"
-                                    CornerRadius="0,3,3,0">
-                                <StackPanel Orientation="Horizontal"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Margin="12,4,12,4">
-                                    <TextBlock Text="{TemplateBinding Value}"
-                                               FontWeight="Bold"
-                                               Foreground="{TemplateBinding Foreground}"
-                                               VerticalAlignment="Center" />
-                                    <TextBlock Text="{TemplateBinding Unit}"
-                                               Margin="4,0,0,0"
-                                               Foreground="{TemplateBinding Foreground}"
-                                               VerticalAlignment="Center" />
-                                </StackPanel>
-                            </Border>
+                            <TextBlock Grid.Column="1"
+                                       Text="{TemplateBinding Label}"
+                                       Margin="12,0,8,0"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"
+                                       FontSize="{DynamicResource Font.Size.Small}"
+                                       Foreground="{DynamicResource Brush.Text.Secondary}" />
+
+                            <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                        Margin="0,0,14,0"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="{TemplateBinding Value}"
+                                           FontWeight="Bold"
+                                           FontSize="{DynamicResource Font.Size.Metric}"
+                                           Foreground="{TemplateBinding Accent}"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{TemplateBinding Unit}"
+                                           Margin="3,0,0,0"
+                                           FontSize="{DynamicResource Font.Size.Small}"
+                                           Foreground="{DynamicResource Brush.Text.Secondary}"
+                                           VerticalAlignment="Bottom"
+                                           Padding="0,0,0,2" />
+                            </StackPanel>
                         </Grid>
                     </Border>
                 </ControlTemplate>

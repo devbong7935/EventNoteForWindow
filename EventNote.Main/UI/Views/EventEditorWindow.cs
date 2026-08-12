@@ -1,5 +1,6 @@
 using System.Windows;
 using EventNote.Main.Local.ViewModels;
+using EventNote.Support.UI.Shell;
 
 namespace EventNote.Main.UI.Views;
 
@@ -7,7 +8,7 @@ namespace EventNote.Main.UI.Views;
 /// 행사 추가 / 편집 대화상자. ViewModel 의 닫기 요청을 DialogResult 로 옮겨준다.
 /// 겉모습은 Themes/Views/EventEditorWindow.xaml 이 맡는다.
 /// </summary>
-public class EventEditorWindow : Window
+public class EventEditorWindow : ChromeWindow
 {
     private EventEditorViewModel? _viewModel;
 

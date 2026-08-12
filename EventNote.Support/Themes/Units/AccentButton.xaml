@@ -2,66 +2,158 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:EventNote.Support.UI.Units">
 
+    <!--
+        Kind 별 색은 Style.Triggers 에서 Background / HoverBackground / Foreground / BorderBrush 를 정하고,
+        마우스오버는 HoverBackground 로 칠한 판을 위에 겹쳐 서서히 드러내는 방식으로 바꾼다.
+
+        색 자체를 애니메이션하지 않는 이유: 팔레트의 브러시는 앱 전체가 나눠 쓰는 물건이라
+        그 Color 를 건드리면 같은 브러시를 쓰는 다른 곳까지 함께 변한다.
+        Opacity 만 다루면 그럴 일이 없고, 합성은 GPU 가 맡아 비용도 거의 없다.
+    -->
+
     <Style TargetType="{x:Type controls:AccentButton}">
         <Setter Property="Background" Value="{DynamicResource Brush.Button.Neutral}" />
+        <Setter Property="HoverBackground" Value="{DynamicResource Brush.Button.Neutral.Hover}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Button.Neutral.Foreground}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Strong}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Button.Neutral.Border}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="16,7" />
-        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="14,6" />
+        <Setter Property="MinHeight" Value="{DynamicResource Size.Control.Height}" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Style.NoFocusVisual}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:AccentButton}">
                     <Grid>
+                        <Border x:Name="Ring" Margin="-3"
+                                CornerRadius="9"
+                                Background="{DynamicResource Brush.Focus}"
+                                Opacity="0" />
+
                         <Border x:Name="Bd"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
                                 SnapsToDevicePixels="True" />
-                        <!-- 마우스 상태는 얇은 오버레이로 표현해서 Kind 별 색을 따로 정의하지 않는다. -->
-                        <Border x:Name="Overlay"
+
+                        <!--
+                            Margin 으로 테두리 두께만큼 물러나 있는다. 안 그러면 겹쳐 칠하는 판이
+                            Bd 의 1px 테두리까지 덮어 버려서, 마우스를 올리는 순간 테두리가 사라진다.
+                        -->
+                        <Border x:Name="Hover"
+                                Background="{TemplateBinding HoverBackground}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
-                                Background="#FFFFFF"
+                                Margin="{TemplateBinding BorderThickness}"
                                 Opacity="0" />
+
+                        <!-- 누르는 순간의 어두워짐. 글자색을 쓰므로 라이트/다크 어느 쪽에서도 통한다. -->
+                        <Border x:Name="Press"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Background="{DynamicResource Brush.Text}"
+                                Margin="{TemplateBinding BorderThickness}"
+                                Opacity="0" />
+
                         <StackPanel Orientation="Horizontal"
                                     Margin="{TemplateBinding Padding}"
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                     VerticalAlignment="Center">
+                            <!-- 기호를 글자 앞에 둔다. 아이콘이 앞에 오는 편이 요즘 버튼에 가깝다. -->
+                            <TextBlock x:Name="GlyphText"
+                                       Text="{TemplateBinding Glyph}"
+                                       Margin="0,0,7,0"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"
+                                       Foreground="{TemplateBinding Foreground}" />
                             <ContentPresenter x:Name="Content"
                                               RecognizesAccessKey="True"
                                               VerticalAlignment="Center"
                                               TextElement.Foreground="{TemplateBinding Foreground}" />
-                            <TextBlock x:Name="GlyphText"
-                                       Text="{TemplateBinding Glyph}"
-                                       Margin="6,0,0,0"
-                                       FontWeight="Bold"
-                                       VerticalAlignment="Center"
-                                       Foreground="{TemplateBinding Foreground}" />
                         </StackPanel>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Glyph" Value="">
                             <Setter TargetName="GlyphText" Property="Visibility" Value="Collapsed" />
                         </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Overlay" Property="Background" Value="#FFFFFF" />
-                            <Setter TargetName="Overlay" Property="Opacity" Value="0.25" />
-                        </Trigger>
+
+                        <!--
+                            들어올 때는 빠르게, 나갈 때는 조금 느긋하게. 표를 훑다 커서가 스쳐 지나가도
+                            버튼이 깜빡이지 않고 부드럽게 가라앉는다.
+                            IsEnabled 를 함께 보는 이유: 비활성 버튼 위에서도 IsMouseOver 는 참이 된다.
+                        -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsEnabled" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Hover"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" Duration="0:0:0.09" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Hover"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0" Duration="0:0:0.16" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.ExitActions>
+                        </MultiTrigger>
+
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Overlay" Property="Background" Value="#000000" />
-                            <Setter TargetName="Overlay" Property="Opacity" Value="0.12" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Press"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.10" Duration="0:0:0.04" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Press"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0" Duration="0:0:0.16" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
+
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-                            <Setter TargetName="Bd" Property="BorderThickness" Value="2" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Ring"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.3" Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Ring"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0" Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
+
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Disabled}" />
@@ -74,18 +166,21 @@
         <Style.Triggers>
             <Trigger Property="Kind" Value="Primary">
                 <Setter Property="Background" Value="{DynamicResource Brush.Button.Primary}" />
+                <Setter Property="HoverBackground" Value="{DynamicResource Brush.Button.Primary.Hover}" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Button.Primary.Foreground}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Button.Primary}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Button.Primary.Border}" />
             </Trigger>
             <Trigger Property="Kind" Value="Success">
                 <Setter Property="Background" Value="{DynamicResource Brush.Button.Success}" />
+                <Setter Property="HoverBackground" Value="{DynamicResource Brush.Button.Success.Hover}" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Button.Success.Foreground}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Button.Success}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Button.Success.Border}" />
             </Trigger>
             <Trigger Property="Kind" Value="Danger">
                 <Setter Property="Background" Value="{DynamicResource Brush.Button.Danger}" />
+                <Setter Property="HoverBackground" Value="{DynamicResource Brush.Button.Danger.Hover}" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Button.Danger.Foreground}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Button.Danger}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Button.Danger.Border}" />
             </Trigger>
         </Style.Triggers>
     </Style>

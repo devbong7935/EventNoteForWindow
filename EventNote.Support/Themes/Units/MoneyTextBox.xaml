@@ -5,52 +5,61 @@
     <Style TargetType="{x:Type controls:MoneyTextBox}">
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.Text}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Strong}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="8,5" />
-        <Setter Property="MinHeight" Value="30" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.Control}" />
+        <Setter Property="MinHeight" Value="{DynamicResource Size.Control.Height}" />
         <Setter Property="TextAlignment" Value="Right" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Style.NoFocusVisual}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:MoneyTextBox}">
-                    <Border x:Name="Bd"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4"
-                            SnapsToDevicePixels="True">
-                        <Grid Margin="{TemplateBinding Padding}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Border x:Name="Ring" Margin="-2" CornerRadius="10"
+                                Background="{DynamicResource Brush.Focus}" Opacity="0" />
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                SnapsToDevicePixels="True">
+                            <Grid Margin="{TemplateBinding Padding}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                            <ScrollViewer x:Name="PART_ContentHost"
-                                          Grid.Column="0"
-                                          Focusable="False"
-                                          VerticalAlignment="Center"
-                                          HorizontalScrollBarVisibility="Hidden"
-                                          VerticalScrollBarVisibility="Hidden" />
+                                <ScrollViewer x:Name="PART_ContentHost"
+                                              Grid.Column="0"
+                                              Focusable="False"
+                                              VerticalAlignment="Center"
+                                              HorizontalScrollBarVisibility="Hidden"
+                                              VerticalScrollBarVisibility="Hidden" />
 
-                            <TextBlock x:Name="PlaceholderText"
-                                       Grid.Column="0"
-                                       Text="{TemplateBinding Placeholder}"
-                                       IsHitTestVisible="False"
-                                       TextAlignment="{TemplateBinding TextAlignment}"
-                                       VerticalAlignment="Center"
-                                       Foreground="{DynamicResource Brush.Text.Disabled}"
-                                       Visibility="Collapsed" />
+                                <TextBlock x:Name="PlaceholderText"
+                                           Grid.Column="0"
+                                           Text="{TemplateBinding Placeholder}"
+                                           IsHitTestVisible="False"
+                                           TextAlignment="{TemplateBinding TextAlignment}"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Normal"
+                                           Foreground="{DynamicResource Brush.Text.Disabled}"
+                                           Visibility="Collapsed" />
 
-                            <TextBlock x:Name="SuffixText"
-                                       Grid.Column="1"
-                                       Text="{TemplateBinding Suffix}"
-                                       Margin="6,0,0,0"
-                                       VerticalAlignment="Center"
-                                       Foreground="{DynamicResource Brush.Text.Secondary}" />
-                        </Grid>
-                    </Border>
+                                <TextBlock x:Name="SuffixText"
+                                           Grid.Column="1"
+                                           Text="{TemplateBinding Suffix}"
+                                           Margin="6,0,0,0"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Normal"
+                                           Foreground="{DynamicResource Brush.Text.Secondary}" />
+                            </Grid>
+                        </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Suffix" Value="">
                             <Setter TargetName="SuffixText" Property="Visibility" Value="Collapsed" />
@@ -59,13 +68,32 @@
                             <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Text.Disabled}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Ring"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.28" Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Ring"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0" Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.Surface.Muted}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Disabled}" />
                         </Trigger>
                     </ControlTemplate.Triggers>

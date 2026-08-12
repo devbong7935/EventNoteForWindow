@@ -15,9 +15,23 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type views:MainContent}">
-                    <Grid Margin="10" d:DataContext="{d:DesignInstance Type=vm:MainViewModel}">
+                    <Grid d:DataContext="{d:DesignInstance Type=vm:MainViewModel}">
+
+                    <!-- 창이 뜰 때 본문이 한 번 부드럽게 떠오른다. 앱을 켜는 순간이 덜 툭 튄다. -->
+                    <Grid x:Name="Body" Margin="14" Opacity="0">
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         To="1" Duration="0:0:0.22" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="280" MinWidth="220" />
+                            <ColumnDefinition Width="300" MinWidth="240" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" MinWidth="640" />
                         </Grid.ColumnDefinitions>
@@ -26,13 +40,13 @@
                         <units:CardPanel Grid.Column="0" Header="행사 목록" HeaderAlignment="Left">
                             <DockPanel>
                                 <UniformGrid DockPanel.Dock="Top" Columns="2" Margin="0,0,0,8">
-                                    <units:AccentButton Content="행사 추가" Glyph="＋" Kind="Success" Margin="0,0,3,0"
+                                    <units:AccentButton Content="행사 추가" Glyph="＋" Kind="Success" Margin="0,0,4,0"
                                                         Command="{Binding AddEventCommand}" />
-                                    <units:AccentButton Content="행사 삭제" Glyph="－" Kind="Danger" Margin="3,0,0,0"
+                                    <units:AccentButton Content="행사 삭제" Glyph="－" Kind="Danger" Margin="4,0,0,0"
                                                         Command="{Binding DeleteEventCommand}" />
                                 </UniformGrid>
 
-                                <units:AccentButton DockPanel.Dock="Top" Content="행사 정보 편집" Kind="Neutral" Margin="0,0,0,10"
+                                <units:AccentButton DockPanel.Dock="Top" Content="행사 정보 편집" Kind="Neutral" Margin="0,0,0,12"
                                                     HorizontalAlignment="Stretch"
                                                     Command="{Binding EditEventCommand}" />
 
@@ -69,7 +83,7 @@
                             </DockPanel>
                         </units:CardPanel>
 
-                        <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" Background="Transparent"
+                        <GridSplitter Grid.Column="1" Width="10" HorizontalAlignment="Stretch" Background="Transparent"
                                       VerticalAlignment="Stretch" />
 
                         <!-- 오른쪽: 선택한 행사의 하객 명부 -->
@@ -82,15 +96,16 @@
                             </Grid.RowDefinitions>
 
                             <!-- 행사 제목 -->
-                            <StackPanel Grid.Row="0" Margin="2,0,2,10">
-                                <TextBlock Text="{Binding SelectedEventHeader}" FontSize="18" FontWeight="Bold"
+                            <StackPanel Grid.Row="0" Margin="2,2,2,14">
+                                <TextBlock Text="{Binding SelectedEventHeader}"
+                                           FontSize="{DynamicResource Font.Size.Display}" FontWeight="Bold"
                                            Foreground="{DynamicResource Brush.Text}" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding SelectedEventSubHeader}" FontSize="12" Margin="0,3,0,0"
+                                <TextBlock Text="{Binding SelectedEventSubHeader}" FontSize="12" Margin="0,4,0,0"
                                            Foreground="{DynamicResource Brush.Text.Secondary}" />
                             </StackPanel>
 
                             <!-- 검색 + 하객 조작 -->
-                            <Grid Grid.Row="1" Margin="0,0,0,10">
+                            <Grid Grid.Row="1" Margin="0,0,0,12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" MaxWidth="480" />
                                     <ColumnDefinition Width="*" />
@@ -120,11 +135,13 @@
                             <!-- 하객 리스트 -->
                             <units:CardPanel Grid.Row="2" Header="하객 리스트">
                                 <Grid>
+                                    <!-- 카드가 이미 테두리를 그린다. 표까지 테두리를 두르면 상자 속 상자가 된다. -->
                                     <DataGrid x:Name="GuestGrid"
                                               ItemsSource="{Binding GuestsView}"
                                               SelectedItem="{Binding SelectedGuest, Mode=TwoWay}"
                                               SelectionMode="Extended"
                                               AlternationCount="2"
+                                              BorderThickness="0"
                                               CanUserSortColumns="True"
                                               Visibility="{Binding HasSelectedEvent, Converter={StaticResource BoolToVis}}">
                                         <DataGrid.Resources>
@@ -220,15 +237,16 @@
                             </units:CardPanel>
 
                             <!-- 집계 -->
-                            <Grid Grid.Row="3" Margin="0,10,0,0" Height="196">
+                            <Grid Grid.Row="3" Margin="0,12,0,0" Height="212">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="330" />
+                                    <ColumnDefinition Width="340" />
                                 </Grid.ColumnDefinitions>
 
-                                <units:CardPanel Grid.Column="0" Header="분류별 집계" HeaderAlignment="Left" Margin="0,0,10,0">
+                                <units:CardPanel Grid.Column="0" Header="분류별 집계" Margin="0,0,12,0">
                                     <DataGrid ItemsSource="{Binding Summary}" IsReadOnly="True"
-                                              HeadersVisibility="Column" AlternationCount="2">
+                                              HeadersVisibility="Column" AlternationCount="2"
+                                              BorderThickness="0">
                                         <DataGrid.Resources>
                                             <units:BindingProxy x:Key="SummaryGridProxy" Data="{Binding}" />
                                         </DataGrid.Resources>
@@ -271,13 +289,13 @@
                                         식권을 안 쓰는 행사에서 아래 두 타일이 사라져도 빈칸이 남지 않는다.
                                     -->
                                     <UniformGrid Columns="1">
-                                        <units:StatTile Margin="0,0,0,4" Label="전체 금액" Unit="원"
+                                        <units:StatTile Margin="0,0,0,6" Label="전체 금액" Unit="원"
                                                         Value="{Binding TotalAmountText}"
                                                         Accent="{DynamicResource Brush.Tile.Pink}" />
-                                        <units:StatTile Margin="0,0,0,4" Label="전체 인원" Unit="명"
+                                        <units:StatTile Margin="0,0,0,6" Label="전체 인원" Unit="명"
                                                         Value="{Binding TotalGuestCountText}"
                                                         Accent="{DynamicResource Brush.Tile.Blue}" />
-                                        <units:StatTile Margin="0,0,0,4" Label="전체 식권" Unit="장"
+                                        <units:StatTile Margin="0,0,0,6" Label="전체 식권" Unit="장"
                                                         Value="{Binding TotalTicketText}"
                                                         Accent="{DynamicResource Brush.Tile.Green}"
                                                         Visibility="{Binding UsesMealTickets, Converter={StaticResource BoolToVis}}" />
@@ -290,6 +308,25 @@
                             </Grid>
                         </Grid>
                     </Grid>
+
+                        <!-- 본문 위에 덮이므로 흐려지지 않는다. 안쪽 카드와 글자는 또렷해야 읽힌다. -->
+                        <units:BusyOverlay IsActive="{Binding ShowBusyOverlay}"
+                                           Message="{Binding StatusText}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <!--
+                            흐림 효과는 바쁠 때만 붙인다. Radius 0 짜리를 늘 달아 두고 값만 애니메이션하면
+                            표를 스크롤할 때마다 그 효과를 거쳐 그리느라 느려진다.
+                            표시 자체가 250ms 늦게 뜨므로 딱 붙는 것이 오히려 자연스럽다.
+                        -->
+                        <DataTrigger Binding="{Binding ShowBusyOverlay}" Value="True">
+                            <Setter TargetName="Body" Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect Radius="7" KernelType="Gaussian" RenderingBias="Performance" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

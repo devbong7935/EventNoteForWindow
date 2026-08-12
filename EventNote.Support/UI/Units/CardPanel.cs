@@ -27,9 +27,9 @@ public class CardPanel : HeaderedContentControl
 
     public static readonly DependencyProperty HeaderAlignmentProperty = DependencyProperty.Register(
         nameof(HeaderAlignment), typeof(HorizontalAlignment), typeof(CardPanel),
-        new FrameworkPropertyMetadata(HorizontalAlignment.Center));
+        new FrameworkPropertyMetadata(HorizontalAlignment.Left));
 
-    /// <summary>제목 정렬. 기본은 가운데.</summary>
+    /// <summary>제목 정렬. 기본은 왼쪽.</summary>
     public HorizontalAlignment HeaderAlignment
     {
         get => (HorizontalAlignment)GetValue(HeaderAlignmentProperty);

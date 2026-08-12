@@ -6,7 +6,8 @@
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="10" />
+        <Setter Property="Padding" Value="{DynamicResource Padding.Card}" />
+        <Setter Property="CornerRadius" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -16,15 +17,24 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             SnapsToDevicePixels="True">
+                        <!--
+                            아주 옅은 그림자. 라이트 테마에서 카드가 바탕에서 살짝 떠 보이게 하는 정도이고,
+                            다크 테마에서는 사실상 보이지 않는다. 그쪽은 표면 밝기 차이로 구분된다.
+                        -->
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="12" ShadowDepth="1" Direction="270"
+                                              Opacity="0.07" Color="#000000" />
+                        </Border.Effect>
                         <DockPanel Margin="{TemplateBinding Padding}">
-                            <Grid x:Name="HeaderRow" DockPanel.Dock="Top" Margin="0,0,0,8">
+                            <Grid x:Name="HeaderRow" DockPanel.Dock="Top" Margin="0,0,0,10">
+                                <!-- 제목은 크게 키우지 않고 작게 눌러 둔다. 주인공은 표와 숫자다. -->
                                 <ContentPresenter x:Name="HeaderHost"
                                                   ContentSource="Header"
                                                   HorizontalAlignment="{TemplateBinding HeaderAlignment}"
                                                   VerticalAlignment="Center"
-                                                  TextElement.FontSize="15"
-                                                  TextElement.FontWeight="Bold"
-                                                  TextElement.Foreground="{TemplateBinding Foreground}" />
+                                                  TextElement.FontSize="{DynamicResource Font.Size.Normal}"
+                                                  TextElement.FontWeight="SemiBold"
+                                                  TextElement.Foreground="{DynamicResource Brush.Text.Secondary}" />
                                 <ContentPresenter Content="{TemplateBinding HeaderAccessory}"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center" />

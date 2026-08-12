@@ -4,7 +4,7 @@
 
     <Style TargetType="{x:Type controls:SearchBar}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
-        <Setter Property="MinHeight" Value="30" />
+        <Setter Property="MinHeight" Value="{DynamicResource Size.Control.Height}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:SearchBar}">
@@ -24,12 +24,26 @@
                                   SelectedItem="{Binding SelectedField, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
 
                         <Grid Grid.Column="1" Margin="8,0,8,0">
+                            <!-- 왼쪽 여백을 비워 둔 입력칸. 그 자리에 돋보기를 얹는다. -->
                             <TextBox x:Name="PART_Editor"
+                                     Padding="32,6,10,6"
                                      VerticalContentAlignment="Center"
                                      Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Canvas x:Name="SearchIcon" Width="14" Height="14"
+                                    Margin="11,0,0,0"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center"
+                                    IsHitTestVisible="False">
+                                <Ellipse Canvas.Left="0.5" Canvas.Top="0.5" Width="10" Height="10"
+                                         Stroke="{DynamicResource Brush.Text.Disabled}" StrokeThickness="1.5" />
+                                <Line X1="10" Y1="10" X2="13.5" Y2="13.5"
+                                      Stroke="{DynamicResource Brush.Text.Disabled}" StrokeThickness="1.5"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                            </Canvas>
+
                             <TextBlock x:Name="PlaceholderText"
                                        Text="{TemplateBinding Placeholder}"
-                                       Margin="10,0,0,0"
+                                       Margin="33,0,0,0"
                                        IsHitTestVisible="False"
                                        VerticalAlignment="Center"
                                        Foreground="{DynamicResource Brush.Text.Disabled}"
@@ -49,6 +63,9 @@
                         </Trigger>
                         <Trigger Property="Text" Value="{x:Null}">
                             <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="SearchIcon" Property="Opacity" Value="0.5" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

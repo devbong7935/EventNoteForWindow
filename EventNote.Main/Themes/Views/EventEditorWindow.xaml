@@ -34,12 +34,42 @@
                         Window 기본 템플릿에는 Background 를 칠하는 Border 가 들어 있다.
                         Template 을 갈아끼우면 그게 사라져 창 바탕이 안 칠해지므로 여기서 다시 그린다.
                     -->
-                    <Border Background="{TemplateBinding Background}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource Brush.Border.Strong}"
+                            BorderThickness="1"
+                            SnapsToDevicePixels="True">
                         <AdornerDecorator>
-                            <StackPanel Margin="20" d:DataContext="{d:DesignInstance Type=vm:EventEditorViewModel}">
-                            <TextBlock Text="{Binding DialogTitle}" FontSize="17" FontWeight="Bold" Margin="0,0,0,4"
-                                       Foreground="{DynamicResource Brush.Text}" />
-                            <TextBlock Text="행사 이름이나 주최자 중 하나는 반드시 입력해야 합니다." FontSize="12" Margin="0,0,0,16"
+                            <DockPanel Opacity="0" d:DataContext="{d:DesignInstance Type=vm:EventEditorViewModel}">
+                                <DockPanel.RenderTransform>
+                                    <TranslateTransform Y="10" />
+                                </DockPanel.RenderTransform>
+                                <DockPanel.Triggers>
+                                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                 To="1" Duration="0:0:0.14" />
+                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                 To="0" Duration="0:0:0.22">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </DockPanel.Triggers>
+
+
+                            <!-- 창 이름은 제목줄이 이미 보여 준다. 본문에서 한 번 더 크게 쓰지 않는다. -->
+                            <units:TitleBar DockPanel.Dock="Top"
+                                            Title="{Binding DialogTitle}"
+                                            ShowMark="False"
+                                            ShowMinimize="False"
+                                            ShowMaximize="False" />
+
+                            <StackPanel Margin="24,20,24,22">
+                            <TextBlock Text="행사 이름이나 주최자 중 하나는 반드시 입력해야 합니다." FontSize="12" Margin="0,0,0,18"
                                        Foreground="{DynamicResource Brush.Text.Secondary}" />
 
                             <units:FormField Label="행사 이름">
@@ -111,13 +141,14 @@
                                          VerticalScrollBarVisibility="Auto" />
                             </units:FormField>
 
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
                                 <units:AccentButton Content="저장" Kind="Primary" MinWidth="90" Margin="0,0,8,0"
                                                     IsDefault="True" Command="{Binding SaveCommand}" />
                                 <units:AccentButton Content="취소" Kind="Neutral" MinWidth="90"
                                                     IsCancel="True" Command="{Binding CancelCommand}" />
                                 </StackPanel>
                             </StackPanel>
+                            </DockPanel>
                         </AdornerDecorator>
                     </Border>
                 </ControlTemplate>

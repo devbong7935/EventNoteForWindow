@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace EventNote.Support.UI.Units;
 
@@ -50,6 +51,23 @@ public class AccentButton : Button
     {
         get => (string)GetValue(GlyphProperty);
         set => SetValue(GlyphProperty, value);
+    }
+
+    public static readonly DependencyProperty HoverBackgroundProperty = DependencyProperty.Register(
+        nameof(HoverBackground), typeof(Brush), typeof(AccentButton),
+        new FrameworkPropertyMetadata(null));
+
+    /// <summary>
+    /// 마우스를 올렸을 때의 배경. Kind 별로 스타일에서 채워 준다.
+    ///
+    /// 배경색을 바로 바꾸지 않고 이 색으로 칠한 판을 위에 겹쳐 서서히 드러낸다.
+    /// 팔레트의 브러시는 앱 전체가 나눠 쓰는 물건이라, 그 색을 애니메이션으로 건드리면
+    /// 같은 브러시를 쓰는 다른 곳까지 함께 변한다.
+    /// </summary>
+    public Brush? HoverBackground
+    {
+        get => (Brush?)GetValue(HoverBackgroundProperty);
+        set => SetValue(HoverBackgroundProperty, value);
     }
 
     public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(

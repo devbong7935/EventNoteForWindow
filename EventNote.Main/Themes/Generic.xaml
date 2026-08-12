@@ -5,6 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/EventNote.Main;component/Themes/Views/MainContent.xaml" />
         <ResourceDictionary Source="/EventNote.Main;component/Themes/Views/EventEditorWindow.xaml" />
+        <ResourceDictionary Source="/EventNote.Main;component/Themes/Views/MessageDialog.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

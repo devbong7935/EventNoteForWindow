@@ -24,20 +24,30 @@ public sealed class DialogService : IDialogService
     }
 
     public bool Confirm(string message, string title = "확인")
-        => Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+        => Show(MessageDialogViewModel.Confirm(message, title)) == MessageDialogResult.Yes;
 
     public void Info(string message, string title = "알림")
-        => Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        => Show(MessageDialogViewModel.Info(message, title));
 
     public void Error(string message, string title = "오류")
-        => Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+        => Show(MessageDialogViewModel.Error(message, title));
 
-    private static MessageBoxResult Show(string message, string title, MessageBoxButton button, MessageBoxImage icon)
+    public ImportMode AskImportMode(string message)
+        => Show(MessageDialogViewModel.Import(message)) switch
+        {
+            MessageDialogResult.Yes => ImportMode.Merge,
+            MessageDialogResult.No => ImportMode.Replace,
+            _ => ImportMode.Cancel,
+        };
+
+    /// <summary>MessageBox 대신 쓰는 앱 자체 대화상자. 창을 띄우고 고른 답을 돌려준다.</summary>
+    private MessageDialogResult Show(MessageDialogViewModel viewModel)
     {
-        var owner = ActiveOwner;
-        return owner is null
-            ? MessageBox.Show(message, title, button, icon)
-            : MessageBox.Show(owner, message, title, button, icon);
+        var dialog = _services.GetRequiredService<MessageDialog>();
+        dialog.Owner = ActiveOwner;
+        dialog.DataContext = viewModel;
+        dialog.ShowDialog();
+        return dialog.Result;
     }
 
     public string? AskSaveFilePath(string defaultFileName, string filter = "Excel 통합 문서 (*.xlsx)|*.xlsx")
@@ -68,14 +78,6 @@ public sealed class DialogService : IDialogService
 
         return dialog.ShowDialog(ActiveOwner) == true ? dialog.FileName : null;
     }
-
-    public ImportMode AskImportMode(string message)
-        => Show(message, "데이터 가져오기", MessageBoxButton.YesNoCancel, MessageBoxImage.Question) switch
-        {
-            MessageBoxResult.Yes => ImportMode.Merge,
-            MessageBoxResult.No => ImportMode.Replace,
-            _ => ImportMode.Cancel,
-        };
 
     private static Window? ActiveOwner =>
         Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)

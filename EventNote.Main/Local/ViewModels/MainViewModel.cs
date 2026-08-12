@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using EventNote.Core.Models;
 using EventNote.Core.Services;
 using EventNote.Main.Local.Services;
+using EventNote.Support.Local.Theming;
 
 namespace EventNote.Main.Local.ViewModels;
 
@@ -24,7 +25,15 @@ public partial class MainViewModel : ObservableObject
     private readonly IExcelExportService _excel;
     private readonly IEventArchiveService _archive;
     private readonly IDialogService _dialogs;
+    private readonly IThemeService _theme;
     private readonly DispatcherTimer _autoSaveTimer;
+
+    /// <summary>
+    /// 바쁘다는 표시를 조금 늦춰 띄우기 위한 타이머.
+    /// 행사가 몇 건 없으면 불러오기가 눈 깜짝할 새에 끝나는데, 그때마다 화면이 흐려졌다
+    /// 돌아오면 그게 더 어수선하다. 이 시간 안에 끝난 일은 표시 없이 지나간다.
+    /// </summary>
+    private readonly DispatcherTimer _busyDelay;
 
     /// <summary>불러오는 중에는 변경 알림을 무시해 불필요한 저장을 막는다.</summary>
     private bool _suppressChangeTracking;
@@ -33,12 +42,17 @@ public partial class MainViewModel : ObservableObject
         IEventRepository repository,
         IExcelExportService excel,
         IEventArchiveService archive,
-        IDialogService dialogs)
+        IDialogService dialogs,
+        IThemeService theme)
     {
         _repository = repository;
         _excel = excel;
         _archive = archive;
         _dialogs = dialogs;
+        _theme = theme;
+
+        // 속성이 아니라 필드에 직접 넣는다. 여기서 변경 알림이 돌면 시작하자마자 테마를 다시 입힌다.
+        _isDarkTheme = theme.Current == AppThemeMode.Dark;
 
         SearchFields = Enum.GetValues<GuestSearchField>()
             .Select(f => new SearchFieldOption(f, f.ToDisplayName()))
@@ -49,6 +63,9 @@ public partial class MainViewModel : ObservableObject
 
         _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
         _autoSaveTimer.Tick += OnAutoSaveTick;
+
+        _busyDelay = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+        _busyDelay.Tick += OnBusyDelayTick;
 
         // 행사가 하나도 없으면 '전체 내보내기'도 눌리지 않아야 한다.
         Events.CollectionChanged += (_, _) =>
@@ -102,6 +119,16 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isBusy;
+
+    /// <summary>
+    /// 화면을 덮는 진행 표시를 지금 보여야 하는지. IsBusy 가 잠깐 켜졌다 꺼지는 경우는 걸러진다.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showBusyOverlay;
+
+    /// <summary>설정 메뉴의 다크 모드 토글. 켜고 끄면 그 자리에서 화면 전체 색이 바뀐다.</summary>
+    [ObservableProperty]
+    private bool _isDarkTheme;
 
     public bool HasSelectedEvent => SelectedEvent is not null;
 
@@ -300,6 +327,9 @@ public partial class MainViewModel : ObservableObject
             var models = Events.Select(e => e.ToModel()).ToList();
             await _archive.ExportAsync(models, path);
 
+            // 일은 여기서 끝났다. 아래 알림창이 뜨기 전에 진행 표시부터 걷는다.
+            // 안 그러면 흐려진 화면 위에 "다 됐습니다" 라고 적힌 진행 표시가 남는다.
+            IsBusy = false;
             StatusText = $"데이터를 내보냈습니다 · {Path.GetFileName(path)}";
 
             var guestCount = models.Sum(m => m.Guests.Count);
@@ -419,13 +449,12 @@ public partial class MainViewModel : ObservableObject
     private ImportMode AskHowToImport(ArchiveManifest manifest)
     {
         var source = string.IsNullOrWhiteSpace(manifest.SourceMachine) ? "알 수 없음" : manifest.SourceMachine;
+        // 어느 버튼이 무슨 뜻인지는 버튼 문구가 직접 말한다. 본문에서 다시 설명하지 않는다.
         return _dialogs.AskImportMode(
             $"불러올 파일에는 행사 {manifest.EventCount}건 · 하객 {manifest.GuestCount}명이 들어 있습니다.\n" +
             $"내보낸 시각: {manifest.ExportedAt:yyyy-MM-dd HH:mm} (컴퓨터: {source})\n\n" +
-            $"현재 이 프로그램에는 행사 {Events.Count}건이 있습니다. 어떻게 할까요?\n\n" +
-            "[예]    현재 목록에 합치기 — 같은 행사는 파일 내용으로 바뀝니다\n" +
-            "[아니오] 현재 목록을 모두 지우고 파일 내용으로 교체\n" +
-            "[취소]  가져오지 않기");
+            $"현재 이 프로그램에는 행사 {Events.Count}건이 있습니다.\n" +
+            "합치면 같은 행사는 파일 내용으로 바뀝니다.");
     }
 
     /// <summary>같은 행사(Id 기준)는 가져온 내용으로 바꾸고, 없던 행사는 더한다.</summary>
@@ -467,6 +496,24 @@ public partial class MainViewModel : ObservableObject
         GuestsView = newValue is null ? null : CollectionViewSource.GetDefaultView(newValue.Guests);
         ApplyFilter();
         RefreshSummary();
+    }
+
+    partial void OnIsDarkThemeChanged(bool value)
+        => _theme.Apply(value ? AppThemeMode.Dark : AppThemeMode.Light);
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        _busyDelay.Stop();
+
+        // 끝났으면 바로 걷는다. 시작은 잠깐 기다렸다가 아직도 바쁠 때만 띄운다.
+        if (value) _busyDelay.Start();
+        else ShowBusyOverlay = false;
+    }
+
+    private void OnBusyDelayTick(object? sender, EventArgs e)
+    {
+        _busyDelay.Stop();
+        ShowBusyOverlay = IsBusy;
     }
 
     partial void OnSelectedSearchFieldChanged(SearchFieldOption value) => ApplyFilter();
@@ -552,6 +599,10 @@ public partial class MainViewModel : ObservableObject
             IsBusy = true;
             StatusText = "엑셀 파일을 만드는 중...";
             await export();
+
+            // 아래 확인창이 뜨기 전에 진행 표시를 걷는다. finally 까지 두면 흐려진 화면 위에
+            // 이미 끝났다는 문구를 띄운 진행 표시가 그대로 남는다.
+            IsBusy = false;
             StatusText = $"엑셀로 저장했습니다 · {Path.GetFileName(path)}";
 
             if (_dialogs.Confirm($"엑셀 파일을 저장했습니다.\n\n{path}\n\n지금 열어볼까요?", "내보내기 완료"))

@@ -22,7 +22,8 @@ public class FormField : ContentControl
     }
 
     public static readonly DependencyProperty LabelWidthProperty = DependencyProperty.Register(
-        nameof(LabelWidth), typeof(double), typeof(FormField), new FrameworkPropertyMetadata(88d));
+        // "주최 (혼주/상주)" 가 한 줄에 들어가는 폭. 좁히면 라벨이 두 줄로 접힌다.
+        nameof(LabelWidth), typeof(double), typeof(FormField), new FrameworkPropertyMetadata(102d));
 
     public double LabelWidth
     {

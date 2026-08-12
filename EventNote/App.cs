@@ -1,8 +1,10 @@
 using System.Windows;
 using System.Windows.Threading;
 using EventNote.Forms.UI.Views;
+using EventNote.Main.Local.Services;
 using EventNote.Main.UI.Views;
 using EventNote.Properties;
+using EventNote.Support.Local.Theming;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EventNote;
@@ -30,6 +32,9 @@ internal class App : Application
             .BuildServiceProvider();
 
         DispatcherUnhandledException += OnUnhandledException;
+
+        // 지난번에 고른 테마를 창을 만들기 전에 입혀 둔다. 켜자마자 색이 한 번 바뀌지 않게.
+        ThemeManager.Apply(Services.GetRequiredService<IThemeService>().Current);
 
         var shell = CreateShell();
         MainWindow = shell;
@@ -64,11 +69,19 @@ internal class App : Application
 
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        MessageBox.Show(
-            $"예기치 않은 오류가 발생했습니다.\n\n{e.Exception.Message}",
-            "경조사 명부",
-            MessageBoxButton.OK,
-            MessageBoxImage.Error);
+        var message = $"예기치 않은 오류가 발생했습니다.\n\n{e.Exception.Message}";
+
+        try
+        {
+            Services.GetRequiredService<IDialogService>().Error(message, "경조사 명부");
+        }
+        catch
+        {
+            // 여기까지 왔다는 건 앱 자체가 성한 상태가 아니라는 뜻이다.
+            // 우리 대화상자를 띄우다 또 넘어지면 최소한 Windows 기본 창으로라도 알린다.
+            MessageBox.Show(message, "경조사 명부", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
         e.Handled = true;
     }
 }

@@ -19,6 +19,7 @@ internal static class ViewModules
 
         // 대화상자는 띄울 때마다 새로 만든다.
         services.AddTransient<EventEditorWindow>();
+        services.AddTransient<MessageDialog>();
 
         return services;
     }

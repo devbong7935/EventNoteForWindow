@@ -1,10 +1,18 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- 공용 유닛(UI/Units)의 기본 스타일 모음. WPF 가 자동으로 찾아 읽는다. -->
+    <!--
+        공용 유닛(UI/Units)의 기본 스타일 모음. WPF 가 자동으로 찾아 읽는다.
+        여기 팔레트는 마지막 보루다. 앱이 살아 있을 때는 Application.Resources 쪽이 먼저 잡히므로
+        테마를 바꿔도 이 파일은 건드릴 필요가 없다. 디자이너와 단독 사용을 위해 남겨 둔다.
+    -->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/EventNote.Support;component/Themes/Colors.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Tokens.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Palette.Light.xaml" />
         <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/AccentButton.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/BusyOverlay.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/CaptionButton.xaml" />
+        <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/TitleBar.xaml" />
         <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/CardPanel.xaml" />
         <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/StatTile.xaml" />
         <ResourceDictionary Source="/EventNote.Support;component/Themes/Units/SearchBar.xaml" />

@@ -4,14 +4,16 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using EventNote.Main.Local.ViewModels;
+using EventNote.Support.UI.Shell;
 
 namespace EventNote.Forms.UI.Views;
 
 /// <summary>
 /// 셸 창. 창 틀과 메뉴만 갖고, 본문은 Content 로 받아 끼운다.
 /// 겉모습은 Themes/Views/MainWindow.xaml 이 맡고, 여기서는 수명주기와 단축키만 다룬다.
+/// 제목줄은 ChromeWindow 가 걷어내고 템플릿의 TitleBar 가 대신 그린다.
 /// </summary>
-public class MainWindow : Window
+public class MainWindow : ChromeWindow
 {
     private bool _closeConfirmed;
 

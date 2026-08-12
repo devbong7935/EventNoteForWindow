@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!--
+        색을 뺀 나머지 디자인 값. 라이트/다크가 공유한다.
+        색은 Palette.Light.xaml / Palette.Dark.xaml 에 있다.
+    -->
+
+    <FontFamily x:Key="Font.Default">Pretendard, 맑은 고딕, Malgun Gothic, Segoe UI</FontFamily>
+
+    <sys:Double x:Key="Font.Size.Caption">11.5</sys:Double>
+    <sys:Double x:Key="Font.Size.Small">12</sys:Double>
+    <sys:Double x:Key="Font.Size.Normal">13</sys:Double>
+    <sys:Double x:Key="Font.Size.Title">15</sys:Double>
+    <sys:Double x:Key="Font.Size.Display">19</sys:Double>
+
+    <!-- 숫자를 세로로 줄 맞춰 읽히게 한다. 금액 열과 집계 타일에 쓴다. -->
+    <sys:Double x:Key="Font.Size.Metric">15</sys:Double>
+
+    <CornerRadius x:Key="Radius.Small">4</CornerRadius>
+    <CornerRadius x:Key="Radius.Medium">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Large">10</CornerRadius>
+    <CornerRadius x:Key="Radius.Pill">999</CornerRadius>
+
+    <!-- 입력 컨트롤 공통 높이. TextBox · ComboBox · DatePicker 가 같은 줄에서 어긋나지 않게 한다. -->
+    <sys:Double x:Key="Size.Control.Height">32</sys:Double>
+    <sys:Double x:Key="Size.Row.Height">34</sys:Double>
+    <sys:Double x:Key="Size.Header.Height">34</sys:Double>
+
+    <Thickness x:Key="Padding.Control">10,6</Thickness>
+    <Thickness x:Key="Padding.Card">14</Thickness>
+
+</ResourceDictionary>

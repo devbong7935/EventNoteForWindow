@@ -20,6 +20,7 @@ internal static class ServiceModules
 
         // UI 서비스
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IThemeService, ThemeService>();
 
         return services;
     }
