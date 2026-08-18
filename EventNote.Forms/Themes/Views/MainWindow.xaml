@@ -43,7 +43,8 @@
                                     메뉴 줄이 따로 한 줄 더 있어 세로 40px 을 그냥 먹었다.
                                 -->
                                 <units:TitleBar DockPanel.Dock="Top"
-                                                Title="{TemplateBinding Title}">
+                                                Title="{TemplateBinding Title}"
+                                                Version="{Binding AppVersionText}">
                                     <!--
                                         IsHitTestVisibleInChrome 은 상속되는 속성이지만, TitleBar 안쪽
                                         ContentPresenter 에 걸어 둔 값은 여기 얹히는 메뉴까지 내려오지 않는다.

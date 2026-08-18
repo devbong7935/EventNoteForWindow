@@ -24,7 +24,8 @@ public sealed class HttpUpdateService : IUpdateService, IDisposable
             // HttpClient.Timeout 은 클라이언트 하나에 하나뿐이라 여기서는 풀어 둔다.
             Timeout = Timeout.InfiniteTimeSpan,
         };
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd($"EventNote/{AppVersion.ToDisplay(CurrentVersion)}");
+        // 헤더에는 v 를 붙이지 않는다. User-Agent 는 사람이 아니라 서버가 읽는 값이다.
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd($"EventNote/{CurrentVersion}");
     }
 
     public Version CurrentVersion => AppVersion.Current;

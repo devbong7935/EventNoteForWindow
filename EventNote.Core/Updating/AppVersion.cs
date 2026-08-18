@@ -34,12 +34,14 @@ public static class AppVersion
     }
 
     /// <summary>
-    /// 화면에 보여 줄 문구.
+    /// 화면에 보여 줄 문구. "v1.0.0.0" 처럼 v 를 붙여 늘 네 자리로 적는다.
     ///
-    /// 네 번째 자리를 쓰는 버전(1.0.0.1)이면 네 자리로, 아니면 세 자리로 적는다.
-    /// 늘 세 자리로 자르면 1.0.0.1 이 "1.0.0" 으로 나와, 업데이트 창에
-    /// "새 버전 1.0.0 · 현재 버전 1.0.0" 처럼 같은 숫자가 두 번 찍힌다.
+    /// 뒤의 0 을 떼면 1.0.0.0 이 "1.0.0" 으로 나와 배포 파일 이름이나 매니페스트에 적은
+    /// 버전과 달라 보인다. 자리 수가 들쭉날쭉하면 업데이트 창에서 두 버전을 나란히
+    /// 놓았을 때 어느 쪽이 새것인지 읽기도 어렵다.
+    ///
+    /// 사람이 읽을 자리에만 쓴다. 헤더나 파일 이름처럼 기계가 읽는 곳에는
+    /// <see cref="Current"/> 같은 Version 값을 그대로 넘긴다.
     /// </summary>
-    public static string ToDisplay(Version version)
-        => version.Revision > 0 ? version.ToString(4) : version.ToString(3);
+    public static string ToDisplay(Version version) => $"v{Normalize(version).ToString(4)}";
 }
