@@ -75,6 +75,9 @@
                                             <MenuItem Header="데이터 폴더 열기(_D)" Command="{Binding OpenDataFolderCommand}" />
                                         </MenuItem>
                                         <MenuItem Header="도움말(_H)">
+                                            <MenuItem Header="업데이트 확인(_U)" Command="{Binding CheckForUpdateCommand}"
+                                                      ToolTip="새 버전이 나왔는지 확인합니다. 프로그램을 켤 때도 한 번 확인합니다." />
+                                            <Separator />
                                             <MenuItem Header="프로그램 정보(_A)" Command="{Binding ShowAboutCommand}" />
                                         </MenuItem>
                                     </Menu>

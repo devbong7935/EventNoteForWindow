@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EventNote.Core.Models;
 using EventNote.Core.Services;
+using EventNote.Core.Updating;
 using EventNote.Main.Local.Services;
 using EventNote.Support.Local.Theming;
 
@@ -26,6 +27,8 @@ public partial class MainViewModel : ObservableObject
     private readonly IEventArchiveService _archive;
     private readonly IDialogService _dialogs;
     private readonly IThemeService _theme;
+    private readonly IUpdateService _updates;
+    private readonly IAppLifetime _lifetime;
     private readonly DispatcherTimer _autoSaveTimer;
 
     /// <summary>
@@ -43,13 +46,17 @@ public partial class MainViewModel : ObservableObject
         IExcelExportService excel,
         IEventArchiveService archive,
         IDialogService dialogs,
-        IThemeService theme)
+        IThemeService theme,
+        IUpdateService updates,
+        IAppLifetime lifetime)
     {
         _repository = repository;
         _excel = excel;
         _archive = archive;
         _dialogs = dialogs;
         _theme = theme;
+        _updates = updates;
+        _lifetime = lifetime;
 
         // 속성이 아니라 필드에 직접 넣는다. 여기서 변경 알림이 돌면 시작하자마자 테마를 다시 입힌다.
         _isDarkTheme = theme.Current == AppThemeMode.Dark;
@@ -134,6 +141,16 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDarkTheme;
 
+    /// <summary>업데이트를 확인하거나 내려받는 중인지. 확인 메뉴를 두 번 누르지 못하게 막는다.</summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CheckForUpdateCommand))]
+    private bool _isCheckingUpdate;
+
+    public bool CanCheckForUpdate => !IsCheckingUpdate;
+
+    /// <summary>도움말에서 보여 줄 현재 버전.</summary>
+    public string AppVersionText => AppVersion.ToDisplay(_updates.CurrentVersion);
+
     public bool HasSelectedEvent => SelectedEvent is not null;
 
     /// <summary>
@@ -211,6 +228,9 @@ public partial class MainViewModel : ObservableObject
             _suppressChangeTracking = false;
             IsBusy = false;
         }
+
+        // 기다리지 않는다. 업데이트 확인이 첫 화면을 붙잡고 있으면 안 된다.
+        _ = CheckForUpdateOnStartupAsync();
     }
 
     [RelayCommand]
@@ -465,10 +485,14 @@ public partial class MainViewModel : ObservableObject
         Process.Start(new ProcessStartInfo("explorer.exe", $"\"{folder}\"") { UseShellExecute = true });
     }
 
+    /// <summary>도움말 > 업데이트 확인. 최신이어도 결과를 알려 준다.</summary>
+    [RelayCommand(CanExecute = nameof(CanCheckForUpdate))]
+    private Task CheckForUpdateAsync() => RunUpdateCheckAsync(silent: false);
+
     [RelayCommand]
     private void ShowAbout()
         => _dialogs.Info(
-            "경조사 명부 (EventNote)\n\n" +
+            $"경조사 명부 (EventNote) {AppVersionText}\n\n" +
             "행사별로 명부와 경조사금을 정리하고 엑셀로 내보냅니다.\n" +
             "결혼식은 하객, 장례식은 조문객으로 행사 종류에 맞춰 표시합니다.\n\n" +
             $"데이터 파일: {_repository.StorePath}\n" +
@@ -476,6 +500,161 @@ public partial class MainViewModel : ObservableObject
             "다른 컴퓨터로 옮기려면 [파일 > 데이터 내보내기]로 .enote 파일을 만든 뒤,\n" +
             "그쪽 컴퓨터에서 [파일 > 데이터 가져오기]로 여세요.",
             "도움말");
+
+    // 업데이트 -------------------------------------------------------------
+
+    /// <summary>
+    /// 시작하고 잠시 뒤 조용히 새 버전을 확인한다.
+    /// 네트워크가 없거나 매니페스트를 못 읽는 건 알리지 않는다. 업데이트 확인 때문에
+    /// 켜자마자 오류창이 뜨면 정작 쓰려던 일이 방해받는다.
+    /// </summary>
+    private async Task CheckForUpdateOnStartupAsync()
+    {
+        // 첫 화면이 그려지는 것과 겹치지 않게 목록이 자리를 잡은 뒤에 움직인다.
+        await Task.Delay(TimeSpan.FromSeconds(3));
+
+        try
+        {
+            await RunUpdateCheckAsync(silent: true);
+        }
+        catch
+        {
+            // 여기서 새 나간 예외는 아무도 받지 않는다. 업데이트는 있으면 좋은 것일 뿐이다.
+        }
+    }
+
+    /// <param name="silent">참이면 최신이거나 확인에 실패했을 때 대화상자를 띄우지 않는다.</param>
+    private async Task RunUpdateCheckAsync(bool silent)
+    {
+        if (IsCheckingUpdate) return;
+
+        UpdateCheckResult result;
+        try
+        {
+            IsCheckingUpdate = true;
+            if (!silent) StatusText = "업데이트를 확인하는 중...";
+
+            result = await _updates.CheckAsync();
+        }
+        finally
+        {
+            IsCheckingUpdate = false;
+        }
+
+        var current = AppVersion.ToDisplay(_updates.CurrentVersion);
+
+        switch (result.Status)
+        {
+            case UpdateStatus.UpToDate:
+                StatusText = $"최신 버전입니다 · {current}";
+                if (!silent) _dialogs.Info($"이미 최신 버전입니다.\n\n현재 버전 {current}", "업데이트 확인");
+                return;
+
+            case UpdateStatus.Unavailable:
+                StatusText = "업데이트를 확인하지 못했습니다.";
+                if (!silent)
+                {
+                    _dialogs.Error(
+                        "업데이트 정보를 가져오지 못했습니다.\n\n" +
+                        "인터넷 연결을 확인한 뒤 다시 시도해 주세요.",
+                        "업데이트 확인");
+                }
+
+                return;
+
+            // 너무 옛 버전이라 바로 올릴 수 없는 경우. 조용한 확인이어도 이건 알린다.
+            case UpdateStatus.ManualRequired when result.Manifest is { } blocked:
+                StatusText = $"새 버전 {AppVersion.ToDisplay(blocked.Version)} 이(가) 있습니다.";
+                _dialogs.Info(
+                    $"새 버전 {AppVersion.ToDisplay(blocked.Version)} 이(가) 나왔습니다.\n" +
+                    $"현재 버전 {current}\n\n" +
+                    "지금 버전에서는 자동으로 올릴 수 없습니다.\n" +
+                    $"아래 주소에서 직접 받아 설치해 주세요.\n\n{blocked.Installer.Url}",
+                    "업데이트 안내");
+                return;
+
+            case UpdateStatus.Available when result.Manifest is { } manifest:
+                await OfferUpdateAsync(manifest, current);
+                return;
+        }
+    }
+
+    /// <summary>새 버전을 안내하고 동의를 받으면 설치까지 이어 간다.</summary>
+    private async Task OfferUpdateAsync(UpdateManifest manifest, string current)
+    {
+        var next = AppVersion.ToDisplay(manifest.Version);
+        StatusText = $"새 버전 {next} 이(가) 있습니다.";
+
+        var released = manifest.ReleasedAt is { } date ? $" ({date:yyyy-MM-dd} 배포)" : string.Empty;
+        var size = manifest.Installer.Size > 0
+            ? $"내려받을 용량 {manifest.Installer.Size / 1024d / 1024d:0.0} MB\n"
+            : string.Empty;
+        var notes = string.IsNullOrWhiteSpace(manifest.Notes)
+            ? string.Empty
+            : $"\n바뀐 내용\n{manifest.Notes}\n";
+
+        var message =
+            $"새 버전 {next} 이(가) 나왔습니다.{released}\n" +
+            $"현재 버전 {current}\n" +
+            size +
+            notes +
+            "\n지금 내려받아 설치할까요?\n" +
+            "설치를 시작하면 저장한 뒤 프로그램이 종료됩니다.\n" +
+            "설치가 끝나면 다시 실행해 주세요.";
+
+        if (!_dialogs.Confirm(message, manifest.Mandatory ? "필수 업데이트" : "업데이트 알림"))
+        {
+            StatusText = $"업데이트를 미뤘습니다 · 새 버전 {next}";
+            return;
+        }
+
+        await DownloadAndInstallAsync(manifest);
+    }
+
+    private async Task DownloadAndInstallAsync(UpdateManifest manifest)
+    {
+        string installer;
+        try
+        {
+            IsCheckingUpdate = true;
+            IsBusy = true;
+            StatusText = "새 버전을 내려받는 중...";
+
+            // Progress<T> 는 자기를 만든 스레드로 콜백을 돌려준다. 여기가 UI 스레드이므로
+            // 콜백 안에서 StatusText 를 그대로 건드려도 된다.
+            var progress = new Progress<int>(percent => StatusText = $"새 버전을 내려받는 중... {percent}%");
+
+            installer = await _updates.DownloadAsync(manifest, progress);
+        }
+        catch (Exception ex)
+        {
+            StatusText = "업데이트 실패";
+            _dialogs.Error($"새 버전을 내려받지 못했습니다.\n\n{ex.Message}", "업데이트");
+            return;
+        }
+        finally
+        {
+            IsBusy = false;
+            IsCheckingUpdate = false;
+        }
+
+        // 설치 관리자가 파일을 건드리기 전에 저장부터 끝낸다.
+        if (IsDirty) await SaveNowAsync();
+
+        try
+        {
+            _updates.StartInstall(installer, manifest);
+        }
+        catch (Exception ex)
+        {
+            StatusText = "업데이트 실패";
+            _dialogs.Error($"설치를 시작하지 못했습니다.\n\n{ex.Message}", "업데이트");
+            return;
+        }
+
+        // 실행 중인 파일은 덮어쓸 수 없다. msiexec 이 파일을 복사하기 전에 비켜 준다.
+        _lifetime.Shutdown();
+    }
 
     // 내부 처리 -------------------------------------------------------------
 

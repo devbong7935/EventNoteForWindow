@@ -53,6 +53,7 @@
 | 데이터 이사 | 전체 데이터를 `.enote` 파일 하나로 내보내고, 다른 컴퓨터에서 가져오기 |
 | 다크 모드 | 라이트/다크 전환. 고른 테마는 다음 실행 때도 유지됩니다 |
 | 진행 표시 | 오래 걸리는 작업 동안 화면이 흐려지고 동그라미가 돕니다 |
+| 자동 업데이트 | 켤 때 새 버전이 있는지 확인하고, 받아서 설치까지 이어 줍니다 ([릴리스 절차](docs/RELEASE.md)) |
 
 ### 단축키
 
@@ -103,7 +104,7 @@ XAML 은 `Themes/` 아래 `ResourceDictionary` 로만 두고, 화면 클래스�
 | `EventNote.Forms` | `net8.0-windows` | 셸 창 `MainWindow` — 메뉴와 창 외형 |
 | `EventNote.Main` | `net8.0-windows` | 본문 화면과 ViewModel (`MainContent`, `EventEditorWindow`) |
 | `EventNote.Support` | `net8.0-windows` | 공용 UI 부품과 테마 (`AccentButton`, `CardPanel`, `StatTile`, `MoneyTextBox`, `SearchBar` …) |
-| `EventNote.Core` | `net8.0` | 모델 · 저장소 · 암호화 · 엑셀 내보내기. **WPF 에 의존하지 않습니다** |
+| `EventNote.Core` | `net8.0` | 모델 · 저장소 · 암호화 · 엑셀 내보내기 · 자동 업데이트. **WPF 에 의존하지 않습니다** |
 
 ### 테마
 
