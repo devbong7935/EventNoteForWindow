@@ -1,11 +1,11 @@
 {
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "releasedAt": "2026-08-19",
   "mandatory": false,
   "minUpgradableFrom": "1.0.0",
-  "notes": "장례식 용어 구분, 다크 모드 아이콘 수정, 입력칸 여백 정리",
+  "notes": "보안 코드 강화",
   "installer": {
-    "url": "https://github.com/devbong7935/EventNoteForWindow/releases/download/EventNote/EventNote_v1.0.0.0_Setup.exe",
+    "url": "https://github.com/devbong7935/EventNoteForWindow/releases/download/EventNote/EventNote_v1.0.0.1_Update.exe",
     "size": 0,
     "sha256": "",
     "arguments": ""

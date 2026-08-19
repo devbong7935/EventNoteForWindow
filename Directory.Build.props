@@ -6,7 +6,7 @@
       릴리스할 때 이 값과 update/version.json 의 version 을 같은 값으로 맞춰야 한다.
       어긋나면 새로 깔고도 업데이트 알림이 계속 뜬다. 자세한 건 docs/RELEASE.md 참고.
     -->
-    <Version>1.0.0.0</Version>
+    <Version>1.0.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup>
